@@ -1,0 +1,33 @@
+plugins {
+    id 'application'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
+application {
+    mainClass = 'demo.Main'
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs += ['-Xlint:all']
+}
+
+tasks.named('jar', org.gradle.jvm.tasks.Jar) {
+    archiveBaseName = 'app'
+    manifest {
+        attributes 'Main-Class': application.mainClass
+        attributes 'Automatic-Module-Name': 'app'
+    }
+}
+
+tasks.register('package', Copy) {
+    dependsOn 'jar'
+    into buildDir
+    into('libs') {
+        from configurations.runtimeClasspath
+    }
+}
